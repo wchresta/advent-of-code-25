@@ -7,6 +7,7 @@
     devShells.default = pkgs.haskellPackages.shellFor {
       packages = p: [ p.criterion ];
       withHoogle = true;
+      buildInputs = [ pkgs.xmlstarlet ];
     };
   });
 }

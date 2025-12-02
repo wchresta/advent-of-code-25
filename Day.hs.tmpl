@@ -1,0 +1,18 @@
+module Main where
+
+import AOC
+
+main = AOC.runSolverWithTests (AOC.SolutionWithTests
+  { dayNum=%DAY%
+  , solvers=
+    [ WithTests
+        (AOC.LineSolver process result)
+        [("test%DAY%", "%RESULT%")]
+    ]
+  })
+
+process :: String -> String
+process = "Hi"
+
+result = show
+
