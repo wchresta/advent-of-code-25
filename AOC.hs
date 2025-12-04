@@ -129,3 +129,7 @@ cycleN n as = as ++ cycleN (n-1) as
 
 explodeMap :: Foldable t => M.Map a (t b) -> [(a, b)]
 explodeMap = concatMap (\(a,bs) -> map (a,) $ toList bs) . M.toList
+
+count :: (a -> Bool) -> [a] -> Int
+count f = foldr (\x acc -> acc + if f x then 1 else 0) 0
+

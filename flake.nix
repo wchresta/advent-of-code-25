@@ -4,8 +4,12 @@
   let
     pkgs = import nixpkgs { inherit system; };
   in {
-    devShells.default = pkgs.haskellPackages.shellFor {
-      packages = p: [ p.criterion ];
+    devShells.default = (pkgs.haskellPackages.extend
+      (pkgs.haskell.lib.compose.packageSourceOverrides {
+        aoc = ./.;
+      })
+    ).shellFor {
+      packages = p: [ p.aoc ];
       withHoogle = true;
       buildInputs = [ pkgs.xmlstarlet ];
     };
