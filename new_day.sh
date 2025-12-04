@@ -17,7 +17,7 @@ fi
 testFile="inputs/day${day}_test1"
 if [[ ! -e $testFile ]]; then
    testInput=$(xmlstarlet fo -H <(curl https://adventofcode.com/2025/day/$day) 2>/dev/null \
-     | xmlstarlet sel -t -v '//pre[1]/code[1]' | head -c -1 | tr '\n' '@' | sed 's/@/\\    n/g')
+     | xmlstarlet sel -t -v '//pre[1]/code[1]' | head -c -1 | tr '\n' '@' | sed 's/@/\\n/g')
    echo "$testInput" > $testFile
 fi
 
