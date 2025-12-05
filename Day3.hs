@@ -43,7 +43,7 @@ findMaxSeq n as = let
   subs = filter ((maxa==) . head) . take tailsnum . tails $ as
   maxSeqs = map ((maxa:) . findMaxSeq (n-1) . tail) subs
   -- Best is the longest, or the highest
-  best = maxBy (\as -> (length as, posVal as)) subs
+  best = maxBy (\as -> (length as, posVal as)) maxSeqs
  in
   best
 
