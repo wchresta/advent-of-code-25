@@ -26,15 +26,16 @@ solve1 :: Mat -> String
 solve1 = show . fst . removeRolls
 
 solve2 :: Mat -> String
-solve2 m = show . fst . removeAllRolls $ (0,m)
+solve2 m = show . fst . removeAllRolls $ m
 
-removeAllRolls = fix removeAllRolls'
-
-removeAllRolls' :: (Int, Mat) -> (Int, Mat)
-removeAllRolls' (n, m) =
-  case removeRolls m of
-   (0,_)   -> (n,m)
-   (n',m') -> (n+n',m')
+removeAllRolls :: Mat -> (Int,Mat)
+removeAllRolls m = removeAllRolls' $ (0,m)
+  where
+    removeAllRolls' :: (Int, Mat) -> (Int, Mat)
+    removeAllRolls' (n, m) =
+      case removeRolls m of
+       (0,_)   -> (n,m)
+       (n',m') -> removeAllRolls' (n+n',m')
 
 removeRolls :: Mat -> (Int, Mat)
 removeRolls m = M.foldlWithKey f (0,m) $ m
