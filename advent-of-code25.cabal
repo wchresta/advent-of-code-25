@@ -72,6 +72,8 @@ executable advent-of-code25
                  , criterion
                  , deepseq
                  , split
+                 , mtl
+                 , monad-memo
 
     -- Directories containing source files.
     hs-source-dirs:   .
