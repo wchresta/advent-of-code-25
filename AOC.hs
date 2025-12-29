@@ -17,16 +17,21 @@ data Solver a b
  = LineSolver { processLine :: a -> b, collectLines :: [b] -> a }
  | BlockSolver { processBlock :: a -> a }
  | ParseSolver { parser :: P.Parser b, processParsed :: b -> a }
+ | ParseIOSolver { parserIO :: P.Parser b, processParsedIO :: b -> IO a }
 
 data SolverWithTests a b
  = WithTests { tSolver :: Solver a b
              , tTests :: [(String, a)]
              }
 
-runStringSolver :: Solver String b -> String -> String
-runStringSolver (LineSolver l c) = c . map l . lines
-runStringSolver (BlockSolver p) = p
+runStringSolver :: Solver String b -> String -> IO String
+runStringSolver (LineSolver l c) = pure . c . map l . lines
+runStringSolver (BlockSolver p) = pure . p
 runStringSolver (ParseSolver p s) =
+  \inp -> pure $ case P.parse p "input" inp of
+            Left err -> error . show $ err
+            Right x -> s x
+runStringSolver (ParseIOSolver p s) =
   \inp -> case P.parse p "input" inp of
             Left err -> error . show $ err
             Right x -> s x
@@ -42,7 +47,10 @@ data SolutionWithTests a b = SolutionWithTests
  }
 
 parseSolver :: P.Parser b -> (b -> a) -> [(String, a)] -> SolverWithTests a b
-parseSolver p f = WithTests (ParseSolver p f)
+parseSolver p = WithTests . ParseSolver p
+
+parseIOSolver :: P.Parser b -> (b -> IO a) -> [(String, a)] -> SolverWithTests a b
+parseIOSolver p = WithTests . ParseIOSolver p
 
 runSolverWithTests :: SolutionWithTests String a -> IO ()
 runSolverWithTests s = do
@@ -51,7 +59,7 @@ runSolverWithTests s = do
   let runTest (want,slvr,testFile) = do
         inp <- readFile (dataPath ++ "_" ++ testFile)
         t1 <- getCPUTime
-        let got = runStringSolver slvr inp
+        got <- runStringSolver slvr inp
         t2 <- deepseq got getCPUTime
         ok <- test want got
         putStrLn $ "    took " ++ show (t2-t1)
@@ -61,7 +69,7 @@ runSolverWithTests s = do
   if and allRes
     then do
       inp <- readFile $ dataPath
-      results <- mapM (pure . (`runStringSolver` inp) . tSolver) (solvers s)
+      results <- mapM ((`runStringSolver` inp) . tSolver) (solvers s)
       putStrLn $ unlines results
     else putStrLn "Some tests failed"
 

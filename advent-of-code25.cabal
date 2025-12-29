@@ -74,6 +74,7 @@ executable advent-of-code25
                  , split
                  , mtl
                  , monad-memo
+                 , MIP
 
     -- Directories containing source files.
     hs-source-dirs:   .
